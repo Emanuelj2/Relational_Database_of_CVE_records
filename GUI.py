@@ -70,12 +70,22 @@ def fetch_natural_join_data(table_dropdown, table2_dropdown, tree):
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        query = f"SELECT * FROM {table1} NATURAL JOIN {table2}"
+
+        # Test Query to get names 
+        query = (
+            f"SELECT product.name AS Product_Name, {table1}.cvss_score AS CVSS_Score "
+            f"FROM {table1} NATURAL JOIN {table2}"
+        )
         print(f"Executing query: {query}")  # Debugging line
         cursor.execute(query)
         data = cursor.fetchall()
 
-        # Clear the table before inserting new data
+        # Update treeview columns
+        tree["columns"] = ("Product_Name", "CVSS_Score")
+        tree.heading("Product_Name", text="Product Name")
+        tree.heading("CVSS_Score", text="CVSS Score")
+
+        # Clear the tree before inserting new data
         for row in tree.get_children():
             tree.delete(row)
 
@@ -87,6 +97,7 @@ def fetch_natural_join_data(table_dropdown, table2_dropdown, tree):
     except mysql.connector.Error as err:
         messagebox.showerror("Database Error", f"Error: {err}")
         print(f"Error: {err}")
+
 
 # Function to open the main GUI window (called after successful login)
 def open_gui():
