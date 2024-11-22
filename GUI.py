@@ -1,8 +1,9 @@
-
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
 from tkinter import messagebox
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import analyze_data  # Import the analyze_data module
 
 # Database connection configuration (replace with your actual DB credentials)
 DB_CONFIG = {
@@ -27,6 +28,21 @@ def fetch_tables(table_dropdown, table2_dropdown):
         messagebox.showerror("Database Error", f"Error: {err}")
         print(f"Error: {err}")
 
+# Function to dynamically fetch column names for a selected table
+def fetch_columns(table_name):
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute(f"DESCRIBE {table_name}")
+        columns = cursor.fetchall()
+        column_names = [column[0] for column in columns]
+        conn.close()
+        return column_names
+    except mysql.connector.Error as err:
+        messagebox.showerror("Database Error", f"Error: {err}")
+        print(f"Error: {err}")
+        return []
+
 # Function to fetch data based on the selected table and conditions
 def fetch_sorted_data(table_dropdown, sort_column_combobox, sort_order_combobox, tree):
     table_name = table_dropdown.get()
@@ -45,9 +61,15 @@ def fetch_sorted_data(table_dropdown, sort_column_combobox, sort_order_combobox,
         cursor.execute(query)
         data = cursor.fetchall()
 
-        # Clear the table before inserting new data
-        for row in tree.get_children():
-            tree.delete(row)
+        # Fetch column names
+        columns = fetch_columns(table_name)
+        tree["columns"] = columns
+        tree.delete(*tree.get_children())  # Clear existing rows
+
+        # Set column headings
+        for column in columns:
+            tree.heading(column, text=column)
+            tree.column(column, anchor="w")
 
         # Insert new data into the table
         for row in data:
@@ -71,9 +93,9 @@ def fetch_natural_join_data(table_dropdown, table2_dropdown, tree):
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
 
-        # Test Query to get names 
+        # Test Query to get names
         query = (
-            f"SELECT product.name AS Product_Name, {table1}.cvss_score AS CVSS_Score "
+            f"SELECT products.NAME AS Product_Name, {table1}.CVSS_SCORE AS CVSS_Score "
             f"FROM {table1} NATURAL JOIN {table2}"
         )
         print(f"Executing query: {query}")  # Debugging line
@@ -86,8 +108,15 @@ def fetch_natural_join_data(table_dropdown, table2_dropdown, tree):
         tree.heading("CVSS_Score", text="CVSS Score")
 
         # Clear the tree before inserting new data
-        for row in tree.get_children():
-            tree.delete(row)
+        tree.delete(*tree.get_children())  # Clear existing rows
+
+        # Fetch column names dynamically (union of columns in both tables)
+        columns = fetch_columns(table1)
+        tree["columns"] = columns
+
+        for column in columns:
+            tree.heading(column, text=column)
+            tree.column(column, anchor="w")
 
         # Insert new data into the table
         for row in data:
@@ -98,6 +127,23 @@ def fetch_natural_join_data(table_dropdown, table2_dropdown, tree):
         messagebox.showerror("Database Error", f"Error: {err}")
         print(f"Error: {err}")
 
+# Function to display the combined histogram from analyze_data.py
+def display_combined_histogram():
+    try:
+        # Call the function from analyze_data.py to generate the combined histogram
+        fig = analyze_data.generate_group_histograms()  # Use the correct function name here
+
+        # Create a new Tkinter window to display the plot
+        plot_window = tk.Toplevel()
+        plot_window.title("Combined Histogram of CVSS Scores")
+
+        # Create a canvas to display the figure in the Tkinter window
+        canvas = FigureCanvasTkAgg(fig, master=plot_window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+    except AttributeError as e:
+        messagebox.showerror("Error", f"Error: {str(e)}")
+        print(f"Error: {str(e)}")
 
 # Function to open the main GUI window (called after successful login)
 def open_gui():
@@ -121,7 +167,7 @@ def open_gui():
 
     # Sorting options
     tk.Label(input_frame, text="Sort by Column:").grid(row=2, column=0, padx=10, pady=5)
-    sort_column_combobox = ttk.Combobox(input_frame, values=["cvss_score", "published_date", "last_modified"])
+    sort_column_combobox = ttk.Combobox(input_frame)
     sort_column_combobox.grid(row=2, column=1, padx=10, pady=5)
 
     tk.Label(input_frame, text="Sort Order:").grid(row=3, column=0, padx=10, pady=5)
@@ -135,6 +181,10 @@ def open_gui():
     join_button = ttk.Button(input_frame, text="Fetch Natural Join Data", command=lambda: fetch_natural_join_data(table_dropdown, table2_dropdown, tree))
     join_button.grid(row=4, column=1, pady=10)
 
+    # Button to display the combined histogram
+    plot_button = ttk.Button(input_frame, text="Display Combined Histogram", command=display_combined_histogram)
+    plot_button.grid(row=5, column=0, pady=10)
+
     # Table to display fetched data
     tree = ttk.Treeview(fetcher_window, show="headings")
     tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -142,5 +192,11 @@ def open_gui():
     # Fetch tables and update dropdowns
     fetch_tables(table_dropdown, table2_dropdown)
 
+    # Update columns dynamically based on the selected table
+    table_dropdown.bind("<<ComboboxSelected>>", lambda e: sort_column_combobox.config(values=fetch_columns(table_dropdown.get())))
+
     # Run the fetcher window
     fetcher_window.mainloop()
+
+if __name__ == "__main__":
+    open_gui()
