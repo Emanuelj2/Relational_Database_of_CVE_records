@@ -8,7 +8,7 @@ import matplotlib.cm as cm
 file_path = "Products.csv"
 file_path2 = "CVE_RECORDS2.csv"
 
-# Load the CSV files into pandas DataFrames
+# Load the CSV files into pandas DataFrame
 product_table = pd.read_csv(file_path)
 cve_records_table = pd.read_csv(file_path2)
 

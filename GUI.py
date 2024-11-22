@@ -189,7 +189,7 @@ def open_gui():
     tree = ttk.Treeview(fetcher_window, show="headings")
     tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-    # Fetch tables and update dropdowns
+    # Fetch tables and update dropdown
     fetch_tables(table_dropdown, table2_dropdown)
 
     # Update columns dynamically based on the selected table
