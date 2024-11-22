@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 import matplotlib.cm as cm
-
+#
 # Define file paths for the CSV files
 file_path = "Products.csv"
 file_path2 = "CVE_RECORDS2.csv"
