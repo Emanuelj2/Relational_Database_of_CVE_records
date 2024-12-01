@@ -203,6 +203,10 @@ def open_gui():
     plot_button = ttk.Button(input_frame, text="Display Combined Histogram", command=display_combined_histogram)
     plot_button.grid(row=5, column=0, pady=10)
 
+    # Button to display the CVSS Pie Chart
+    plot_button = ttk.Button(input_frame, text="Display Combined Histogram", command=display_piechart())
+    plot_button.grid(row=6, column=0, pady=10)
+
     # Table to display fetched data
     tree = ttk.Treeview(fetcher_window, show="headings")
     tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
