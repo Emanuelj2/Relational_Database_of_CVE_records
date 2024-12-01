@@ -63,26 +63,26 @@ def generate_group_histograms():
     # Return the figure object to embed in Tkinter
     return fig
 
-# Function to generate a pie chart for the distribution of records by 'NAME'
-def generate_pie_chart():
-    # Count the number of records for each product group
-    name_counts = merge_data['NAME'].value_counts()
+# Function to generate a pie chart for average CVSS scores grouped by 'NAME'
+def generate_avg_cvss_pie_chart():
+    # Calculate the average CVSS score for each product group
+    avg_cvss_scores = merge_data.groupby('NAME')['CVSS_SCORE'].mean()
 
     # Define colors for the pie chart based on the color_map
-    colors = [color_map.get(name, 'gray') for name in name_counts.index]
+    colors = [color_map.get(name, 'gray') for name in avg_cvss_scores.index]
 
     # Create the pie chart
     fig, ax = plt.subplots(figsize=(8, 8))
-    ax.pie(name_counts, labels=name_counts.index, autopct='%1.1f%%', startangle=140, colors=colors)
+    ax.pie(avg_cvss_scores, labels=avg_cvss_scores.index, autopct='%1.1f%%', startangle=140, colors=colors)
 
     # Add title
-    ax.set_title('Distribution of Records by Product Group')
+    ax.set_title('Average CVSS Scores by Product Group')
 
     # Return the figure object to embed in Tkinter or display
     return fig
 
-# Generate and display the histograms and pie chart
+# Generate and display the histograms and average CVSS pie chart
 if __name__ == "__main__":
     generate_group_histograms()
-    generate_pie_chart()
+    generate_avg_cvss_pie_chart()
     plt.show()
