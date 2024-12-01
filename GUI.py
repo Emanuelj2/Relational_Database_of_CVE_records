@@ -145,6 +145,24 @@ def display_combined_histogram():
         messagebox.showerror("Error", f"Error: {str(e)}")
         print(f"Error: {str(e)}")
 
+def display_piechart():
+    try:
+        # Call the function from analyze_data.py to generate the combined histogram
+        fig = analyze_data.generate_avg_cvss_pie_chart()  # Use the correct function name here
+
+        # Create a new Tkinter window to display the plot
+        plot_window = tk.Toplevel()
+        plot_window.title("Pie Chart of CVSS Scores")
+
+        # Create a canvas to display the figure in the Tkinter window
+        canvas = FigureCanvasTkAgg(fig, master=plot_window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+    except AttributeError as e:
+        messagebox.showerror("Error", f"Error: {str(e)}")
+        print(f"Error: {str(e)}")
+
+
 # Function to open the main GUI window (called after successful login)
 def open_gui():
     # Create the main window for the fetcher
