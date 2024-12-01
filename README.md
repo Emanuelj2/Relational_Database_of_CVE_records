@@ -3,7 +3,7 @@ The system aids in evaluating the security of major RDBMS and their versions. It
 
 This project is a Python-based data analysis and visualization tool for exploring CVSS scores from vulnerability datasets. It integrates a GUI application using Tkinter and provides data visualizations for better insights into the severity of vulnerabilities across different database products.
 
-# Featuers
+# Features
 -  Login System:
    -  Secure login system for authentication (login.py).
 -  Graphical User Interface:
