@@ -204,7 +204,7 @@ def open_gui():
     plot_button.grid(row=5, column=0, pady=10)
 
     # Button to display the CVSS Pie Chart
-    plot_button = ttk.Button(input_frame, text="Pie Chart", command=display_piechart())
+    plot_button = ttk.Button(input_frame, text="Pie Chart", command=display_piechart)
     plot_button.grid(row=5, column=1, pady=10)
 
     # Table to display fetched data
