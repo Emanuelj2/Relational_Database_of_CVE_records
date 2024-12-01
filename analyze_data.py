@@ -28,7 +28,6 @@ color_map = {
     'MSSQLSERVER': 'darkgreen'
 }
 
-
 # Function to generate individual histograms for each group
 def generate_group_histograms():
     group_by_name = merge_data.groupby('NAME')
@@ -64,5 +63,26 @@ def generate_group_histograms():
     # Return the figure object to embed in Tkinter
     return fig
 
-# If you want to call this function to generate and display the histograms directly
-# generate_group_histograms()
+# Function to generate a pie chart for the distribution of records by 'NAME'
+def generate_pie_chart():
+    # Count the number of records for each product group
+    name_counts = merge_data['NAME'].value_counts()
+
+    # Define colors for the pie chart based on the color_map
+    colors = [color_map.get(name, 'gray') for name in name_counts.index]
+
+    # Create the pie chart
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.pie(name_counts, labels=name_counts.index, autopct='%1.1f%%', startangle=140, colors=colors)
+
+    # Add title
+    ax.set_title('Distribution of Records by Product Group')
+
+    # Return the figure object to embed in Tkinter or display
+    return fig
+
+# Generate and display the histograms and pie chart
+if __name__ == "__main__":
+    generate_group_histograms()
+    generate_pie_chart()
+    plt.show()
