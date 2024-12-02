@@ -22,6 +22,8 @@ This project is a Python-based data analysis and visualization tool for explorin
 -  Python 3.8 or above
 ### DataBase server
 -  MySQL Workbench (https://www.mysql.com/products/workbench/)
+-  https://youtu.be/wgRwITQHszU?si=s4Nv8-L5PVFR6lw1 (Use Full)
+-  https://youtu.be/ftlJoXEBmis?si=r3KPkbS4TtEyo92t
 ### Libraries
 ``` bash
 pip install mysql-connector-python pandas matplotlib tabulate
